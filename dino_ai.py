@@ -1,61 +1,112 @@
-from Xlib import display, X
-from PIL import Image #PIL
-import time
-from fastai.conv_learner import *
-from fastai.dataset import *
-from fastai.plots import *
 import pyautogui
+import os
+import random as rand
+from time import sleep
+import keyboard
+import torch
+if os.path.exists(os.getcwd()+'\\dino_AI'):
+    pass
+else:
+    os.mkdir(os.getcwd()+'\\dino_AI')
+    os.mkdir(os.getcwd()+'\\dino_AI'+'\\jump')
+    os.mkdir(os.getcwd()+'\\dino_AI'+'\\duck')
+    os.mkdir(os.getcwd()+'\\dino_AI'+'\\nothing')
+    os.mkdir(os.getcwd()+'\\dino_AI'+'\\space')
 
-def main():
+jump_path = os.getcwd()+'\\dino_AI'+'\\jump'+'\\'
+duck_path = os.getcwd()+'\\dino_AI'+'\\duck'+'\\'
+nothing_path = os.getcwd()+'\\dino_AI'+'\\nothing'+'\\'
+space_path = os.getcwd()+'\\dino_AI'+'\\space'+'\\'
 
-    os.chdir('/home/shaaran/PycharmProjects/dino_AI/')
-    PATH = '/home/shaaran/PycharmProjects/dino_AI'
-    sz = 224
-    arch = resnet34
-    tfms = tfms_from_model(sz=sz, f_model=arch)
-    data = ImageClassifierData.from_paths(PATH,tfms=tfms)
-    print(data.classes)
-    learn = ConvLearner.pretrained(arch, data, precompute=True)
-    print('loading requirements......')
-    print('This has been made by shaaran alias devshaaran, if you are using this code anywhere for research or educational purposes, please give reference.ENJOY!')
-    learn.precompute = False
-    learn.fit(1e-1, 1)
-    learn.load('all')
-    print('loading done !')
+def collect_data():
     while True:
-        st_time = time.time()
-        W,H = 630,150
-        dsp = display.Display()
-        root = dsp.screen().root
-        raw = root.get_image(163,169, W,H, X.ZPixmap, 0xffffffff,)
-        image = Image.frombytes("RGB", (W, H), raw.data, "raw", "BGRX")
-        image.save('/home/shaaran/PycharmProjects/dino_AI/0.png')
-        time.sleep(0.2)
-        try:
-            trn_tfms, val_tfms = tfms_from_model(arch, sz)
-            im = val_tfms(open_image('/home/shaaran/PycharmProjects/dino_AI/0.png'))
-            learn.precompute = False
-            preds = learn.predict_array(im[None])
-            print(data.classes[np.argmax(preds)])
-        except Exception as e:
-            print(e)
+        img = pyautogui.screenshot(region=(66,168,858,213))
+        img_name_number_1 = rand.randint(0,999999999999)
+        some_text = ['a','b','c','d','e','f','g','h','i','j','k']
+        img_name_number_2 = rand.randint(0,99)
+        chose_text_3 = rand.choice(some_text)
+        final_name = str(img_name_number_1)+chose_text_3+str(img_name_number_2)+'.png'
+
+        if keyboard.is_pressed('up arrow'):
+            img.save(jump_path+final_name)
+            sleep(0.6)
+            print(final_name)
+        elif keyboard.is_pressed('down arrow'):
+            img.save(duck_path+final_name)
+            sleep(0.3)
+            print(final_name)
+        elif keyboard.is_pressed('space'):
+            img.save(space_path+final_name)
+            sleep(0.3)
+            print(final_name)
+        else:
+            try:
+                #img.save(nothing_path+final_name)
+                print('nothing')
+            except Exception as e :
+                print(e)
+
+def split_data():
+    primary_loc_list = os.listdir('C:\\Users\Acer\PycharmProjects\om\\dino_AI')
+    primary_loc = 'C:\\Users\Acer\PycharmProjects\om\\dino_AI'
+
+    if os.path.exists(primary_loc + '\\' + 'train'):
+        pass
+    else:
+        os.mkdir(primary_loc+'\\'+'train')
+    if os.path.exists(primary_loc + '\\' + 'valid'):
+        pass
+    else:
+        os.mkdir(primary_loc+'\\'+'valid')
 
 
 
-def pointer_check():
-    while True:
-        x,y = pyautogui.position()
-        print(x,',',y)
+    for i in primary_loc_list:
+        if i == 'train' or i =='valid':
+            pass
+        else:
+            count = 0
+            secondary_loc_list = os.listdir(primary_loc+'\\'+i)
+            secondary_loc = primary_loc + '\\' + i
+            amount_of_data = len(secondary_loc_list)
+            if os.path.exists(primary_loc + '\\' + 'train' + '\\' + i):
+                pass
+            else:
+                os.mkdir(primary_loc + '\\' + 'train' + '\\' + i)
+            if os.path.exists(primary_loc + '\\' + 'valid' + '\\' + i):
+                pass
+            else:
+                os.mkdir(primary_loc + '\\' + 'valid' + '\\' + i)
 
-def im_check():
 
-    st_time = time.time()
-    W, H = 630, 150
-    dsp = display.Display()
-    root = dsp.screen().root
-    raw = root.get_image(163, 169, W, H, X.ZPixmap, 0xffffffff, )
-    image = Image.frombytes("RGB", (W, H), raw.data, "raw", "BGRX")
-    image.save('/home/shaaran/PycharmProjects/dino_AI/0.png')
 
-main()
+            for j in secondary_loc_list:
+                if count<(amount_of_data*0.25):
+                    os.rename(secondary_loc+'\\'+j,primary_loc+'\\'+'valid'+'\\'+i+'\\'+j)
+                else:
+                    os.rename(secondary_loc + '\\' + j, primary_loc + '\\' + 'train' + '\\' + i + '\\' + j)
+                count += 1
+
+def play_game():
+    from keras.models import load_model
+    import cv2
+    import numpy as np
+    import time
+
+    model = load_model('C:\\Users\\Acer\\PycharmProjects\\om\\dino_AI\\model\\all.h5')
+
+    start = time.time()
+
+    def predict():
+        img = pyautogui.screenshot(region=(66, 168, 858, 213))
+        # model prediction
+        y_prob = model.predict(img)
+        prediction = y_prob.argmax(axis=-1)
+        print(prediction)
+
+
+    predict()
+
+
+play_game()
 
