@@ -50,3 +50,5 @@ def im_check():
    image = Image.frombytes("RGB", (W, H), raw.data, "raw", "BGRX")
    image.save('/home/shaaran/PycharmProjects/dino_AI/0.png')
 main()
+
+#Alpha 
